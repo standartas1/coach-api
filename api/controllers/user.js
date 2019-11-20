@@ -104,14 +104,28 @@ exports.user_delete = (req, res, next) => {
     });
 };
 
-// exports.getAllUsers = async (req, res) => {
-//   try {
-//       const users = await User.find().select('-__v');
-//       res.status(200).json({
-//           count: users.length,
-//           users: users
-//       });
-//   } catch {
-//       res.status(400).json({ message: 'Error while retrieving users data' });
-//   }
-// };
+exports.getAllUsers = async (req, res) => {
+  try {
+      const users = await User.find().select('-__v');
+      res.status(200).json({
+          count: users.length,
+          users: users
+      });
+  } catch {
+      res.status(400).json({ message: 'Error while retrieving users data' });
+  }
+};
+
+exports.getUser = async (req, res) => {
+  try {
+      const userId = req.params.userId;
+      const user = await User.findById(userId).select('-__v');
+      if (user !== null) {
+          res.status(200).json({ user: user });
+      } else {
+          throw Error;
+      }
+  } catch {
+      res.status(400).json({ message: 'Error while retrieving user data' });
+  }
+};

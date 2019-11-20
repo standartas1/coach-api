@@ -13,11 +13,10 @@ router.post("/login", UserController.user_login);
 //Delete a user
 router.delete("/:userId", checkAuth, UserController.user_delete);
 
-//router.get('/', checkAuthUser.auth, usersController.getAllUsers);
-// router.post('/login', usersController.login);
-// router.post('/signup', usersController.signup);
-// router.get('/:userId', checkAuthUser.auth, usersController.getUser);
-// router.patch('/:userId', checkAuthUser.auth, usersController.editUser);
-// router.delete('/:userId', checkAuthUser.auth, usersController.deleteUser);
+//Get all users
+router.get('/', checkAuth, UserController.getAllUsers);
+
+//Get one user
+router.get('/:userId', checkAuth, UserController.getUser);
 
 module.exports = router;
