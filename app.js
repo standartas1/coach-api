@@ -19,13 +19,13 @@ mongoose.connect(
 );
 mongoose.Promise = global.Promise;
 
-const skillRoutes  = require('./api/routes/skills');
 const coachRoutes  = require('./api/routes/coaches');
 const reviewRoutes = require('./api/routes/reviews');
 const userRoutes   = require('./api/routes/user');
 
 //Middleware
 app.use(morgan('dev'));
+app.use('/coachImages', express.static('coachImages'));
 app.use(bodyParser.urlencoded({extended: false}));  //only support simple bodies for url encoded data
 app.use(bodyParser.json());                         //extract json data and makes it more easy to read
 
@@ -44,7 +44,6 @@ app.use((req, res, next) => {
 });
 
 //Routes, which should handle requests
-app.use('/skills',   skillRoutes);      //everything, that starts with /skills. will be forwarded to skills.js file
 app.use('/coaches',  coachRoutes);      //everything, that starts with /coaches. will be forwarded to coaches.js file
 app.use('/reviews',  reviewRoutes);     //everything, that starts with /reviews. will be forwarded to reviews.js file
 app.use("/user",     userRoutes);

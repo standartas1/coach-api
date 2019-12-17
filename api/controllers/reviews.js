@@ -1,129 +1,126 @@
-const Review = require("../models/review");
-const Coach = require("../models/coach");
-const Skill = require("../models/skill");
-var mongoose = require('mongoose');
+const mongoose = require('mongoose');
+const Review = require('../models/review');
+const Wod = require('../models/wod');
+const User = require('../models/user');
 
-exports.reviews_get_all = (req, res, next) => {
-    Review.find()
-    .exec()
-    .then(docs => {
-        res.status(200).json(docs);
-    })
-    .catch(error => {
-        res.status(500).json({
-            error : error
-        });
-    });
-}
-
-exports.reviews_post = (req, res, next) => {
-    Coach.findById(req.body.coachId)
-      .then(coach => {
-        if (!coach) {
-          return res.status(404).json({
-            message: "Coach not found"
-          });
-        }
-        const review = new Review({
-          _id: mongoose.Types.ObjectId(),
-          comment: req.body.comment,
-          skill: req.body.skillId,
-          coach: req.body.coachId,
-          user: req.body.userId
-        });
-        return review.save();
-      })
-      .then(result => {
-        console.log(result);
-        res.status(201).json({
-          message: "Review stored",
-          createdReview: {
-              _id: result._id,
-              date: result.date,
-              comment: result.comment,
-              skill: result.skill,
-              coach: result.coach,
-              user: result.user
-          }
-          // request: {
-          //   type: "GET",
-          //   url: "http://localhost:3000/reviews/" + result._id
-          // }
-        });
-      })
-      .catch(err => {
-        console.log(err);
-        res.status(500).json({
-          error: err
-        });
-      });
-  };
-  
-  exports.reviews_get_one = (req, res, next) => {
-    Review.findById(req.params.reviewId)
-      .exec()
-      .then(review => {
-        if (!review) {
-          return res.status(404).json({
-            message: "Review not found"
-          });
-        }
+exports.getAllReviews = async (req, res) => {
+    try {
+        const reviews = await Review.find()
+            .select('-__v')
+            .populate('user');
         res.status(200).json({
-          review: review
-          // request: {
-          //   type: "GET",
-          //   url: "http://localhost:3000/reviews"
-          // }
+            count: reviews.length,
+            reviews: reviews
         });
-      })
-      .catch(err => {
-        res.status(500).json({
-          error: err
+    } catch {
+        res.status(400).json({
+            message: 'Error while retrieving reviews data'
         });
-      });
-  };
-
-  exports.reviews_update = (req, res, next) => {
-    const id = req.params.reviewId;
-    const updateOps = {};
-    for(const ops of req.body){
-        updateOps[ops.propName] = ops.value;
     }
-    Review.update({_id: id}, { $set: updateOps})
-    .exec()
-    .then(result => {
-        res.status(200).json({
-            message: "Review updated"
-            // request: {
-            //     type: 'GET',
-            //     url: 'http://localhost:3000/coaches/' + id
-            // }
-        });
-    })
-    .catch(error => {
-        console.log(error);
-        res.status(500).json({
-            error: error
-        })
+};
+
+exports.postReview = async (req, res) => {
+    const review = new Review({
+        _id: new mongoose.Types.ObjectId(),
+        comment: req.body.comment,
+        coach: req.body.coach,
+        user: req.userData.userId
     });
-}
-  
-  exports.reviews_delete = (req, res, next) => {
-    Review.remove({ _id: req.params.reviewId })
-      .exec()
-      .then(result => {
-        res.status(200).json({
-          message: "Review deleted"
-          // request: {
-          //   type: "POST",
-          //   url: "http://localhost:3000/reviews",
-          //   body: {coachId: 'ID', date: 'String', comment: 'String'}
-          // }
+
+    try {
+        const result = await review.save();
+        await result.populate('user').execPopulate();
+        if (
+            result.adjustments !== undefined &&
+            result.comment !== undefined &&
+            result.wod !== undefined
+        ) {
+            res.status(201).json({
+                message: 'Review created successfully',
+                createdReview: {
+                    _id: result._id,
+                    comment: result.comment,
+                    coach: result.coach,
+                    user: result.user
+                }
+            });
+        }
+    } catch {
+        res.status(400).json({ message: 'Error while posting new review' });
+    }
+};
+
+exports.getReview = async (req, res) => {
+    const reviewId = req.params.reviewId;
+    try {
+        const review = await Review.findById(reviewId).select('-__v');
+        if (review !== null) {
+            res.status(200).json({ review: review });
+        } else {
+            throw Error;
+        }
+    } catch {
+        res.status(404).json({
+            message: 'No valid entry found for provided ID'
         });
-      })
-      .catch(err => {
-        res.status(500).json({
-          error: err
-        });
-      });
-  };
+    }
+};
+
+exports.updateReview = async (req, res) => {
+    const reviewId = req.params.reviewId;
+    const props = req.body;
+
+    try {
+        const review = await Review.findById(reviewId);
+        if (
+            (new String(req.userData.userId).valueOf() ===
+                new String(review.user).valueOf() &&
+                req.userData.userId !== null) ||
+            req.userData.role === 'Administrator'
+        ) {
+            const review = await Review.updateOne(
+                { _id: reviewId },
+                props
+            );
+            if (review.n > 0) {
+                res.status(200).json({
+                    message: 'Review updated successfully',
+                    reviewId: reviewId
+                });
+            } else {
+                throw Error;
+            }
+        } else {
+            res.status(401).json({ message: 'Auth failed' });
+        }
+    } catch {
+        res.status(400).json({ message: 'Error while updating review' });
+    }
+};
+
+exports.deleteReview = async (req, res) => {
+    const reviewId = req.params.reviewId;
+    try {
+        const review = await Review.findById(reviewId);
+        if (
+            (new String(req.userData.userId).valueOf() ===
+                new String(review.user).valueOf() &&
+                req.userData.userId !== null) ||
+            req.userData.role === 'Administrator'
+        ) {
+            const review = await Review.deleteOne({ _id: reviewId });
+            if (review.n > 0) {
+                res.status(200).json({
+                    message: 'Review deleted successfully',
+                    reviewId: reviewId
+                });
+            } else {
+                throw Error;
+            }
+        } else {
+            res.status(401).json({ message: 'Auth failed' });
+        }
+    } catch {
+        res.status(400).json({ message: 'Error while deleting review' });
+    }
+};
