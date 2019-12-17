@@ -1,26 +1,22 @@
 const express = require('express');
 const router = express.Router();
 const checkAuth = require('../middleware/check-auth');
-
-const Coach = require("../models/coach");
-const Skill = require("../models/skill");
-const Review = require("../models/review");
-
+const checkExisting = require('../middleware/check-existing');
 const ReviewsController = require('../controllers/reviews');
 
 //GET ALL
-router.get('/', ReviewsController.reviews_get_all);  // Any request reaching this route going through the checkAuth middleware and handled by CoachesController.coaches_get_all function
+router.get('/', ReviewsController.getAllReviews);  // Any request reaching this route going through the checkAuth middleware and handled by CoachesController.coaches_get_all function
 
 //POST
-router.post('/', checkAuth, ReviewsController.reviews_post);
+router.post('/', checkAuth.auth, checkExisting.existingCoach, ReviewsController.postReview);
 
 //GET ONE
-router.get('/:reviewId', ReviewsController.reviews_get_one);
+router.get('/:reviewId', ReviewsController.getReview);
 
 //PATCH(UPDATE)
-router.patch('/:reviewId', checkAuth, ReviewsController.reviews_update);
+router.patch('/:reviewId', checkAuth.auth, ReviewsController.updateReview);
 
 //DELETE
-router.delete('/:reviewId', ReviewsController.reviews_delete);
+router.delete('/:reviewId', checkAuth.auth, ReviewsController.deleteReview);
 
 module.exports = router;

@@ -1,12 +1,12 @@
-const Skill = require('../models/skill');
+const Coach = require('../models/coach');
 
-exports.existingskill = async (req, res, next) => {
+exports.existingCoach = async (req, res, next) => {
     try { 
         //checking with heroku
-        console.log(req.body.skill);
-        if (req.body.skill !== undefined) {
-            const skill = await skill.findById(req.body.skill);
-            if (skill !== null) {
+        console.log(req.body.coach);
+        if (req.body.coach !== undefined) {
+            const coach = await Coach.findById(req.body.coach);
+            if (coach !== null) {
                 next();
             } else {
                 throw Error;
@@ -16,7 +16,7 @@ exports.existingskill = async (req, res, next) => {
         }
     } catch (err) {
         return res.status(403).json({
-            message: 'No skills exist with given ID'
+            message: 'No coaches exist with given ID'
         });
     }
 };

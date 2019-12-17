@@ -53,11 +53,11 @@ exports.postCoach = async (req, res) => {
             message: 'Coach created successfully',
             createdCoach: {
                 _id: result._id,
-                skill: result.title,
-                name: result.type,
-                surname: result.difficulty,
-                email: result.workout,
-                experience: result.example,
+                skill: result.skill,
+                name: result.name,
+                surname: result.surname,
+                email: result.email,
+                experience: result.experience,
                 img: result.img,
                 reviews: result.reviews
             }

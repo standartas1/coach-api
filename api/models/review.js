@@ -9,7 +9,7 @@ const reviewSchema = mongoose.Schema({
 },
 { toJSON: { virtuals: true } });
 
-responseSchema.virtual('users', {
+reviewSchema.virtual('users', {
     ref: 'User',
     localField: '_id',
     foreignField: 'user'

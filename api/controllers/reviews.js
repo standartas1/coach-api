@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Review = require('../models/review');
-const Wod = require('../models/wod');
+const Coach = require('../models/coach');
 const User = require('../models/user');
 
 exports.getAllReviews = async (req, res) => {
@@ -31,9 +31,8 @@ exports.postReview = async (req, res) => {
         const result = await review.save();
         await result.populate('user').execPopulate();
         if (
-            result.adjustments !== undefined &&
             result.comment !== undefined &&
-            result.wod !== undefined
+            result.coach !== undefined
         ) {
             res.status(201).json({
                 message: 'Review created successfully',

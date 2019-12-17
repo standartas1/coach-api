@@ -2,21 +2,23 @@ const express = require("express");
 const router = express.Router();
 
 const UserController = require('../controllers/user');
-const checkAuth = require('../middleware/check-auth');
+const userCheckAuth = require('../middleware/user-check-auth');
 
 //Create a new user
-router.post("/signup", UserController.user_signup);
+router.post("/signup", UserController.signup);
 
 //Login
-router.post("/login", UserController.user_login);
+router.post("/login", UserController.login);
 
 //Delete a user
-router.delete("/:userId", checkAuth, UserController.user_delete);
+router.delete("/:userId", userCheckAuth.auth, UserController.deleteUser);
 
 //Get all users
-router.get('/', checkAuth, UserController.getAllUsers);
+router.get('/', userCheckAuth.auth, UserController.getAllUsers);
 
 //Get one user
-router.get('/:userId', checkAuth, UserController.getUser);
+router.get('/:userId', userCheckAuth.auth, UserController.getUser);
+
+router.patch('/:userId', userCheckAuth.auth, UserController.editUser);
 
 module.exports = router;
