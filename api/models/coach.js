@@ -5,9 +5,8 @@ const coachSchema = mongoose.Schema({
     skill: {type: String, require: true},
     name: {type: String, require: true},
     surname: {type: String, require: true},
-    email: {type: String, require: true},
     experience: {type: String, require: true},
-    img: {type: String, require: true} //
+    img: {type: String, require: true}
 });
 
 module.exports = mongoose.model('Coach', coachSchema);

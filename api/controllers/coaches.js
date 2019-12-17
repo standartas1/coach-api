@@ -42,7 +42,6 @@ exports.postCoach = async (req, res) => {
             skill: req.body.skill,
             name: req.body.name,
             surname: req.body.surname,
-            email: req.body.email,
             experience: req.body.experience,
             img: req.body.example
         });
@@ -56,7 +55,6 @@ exports.postCoach = async (req, res) => {
                 skill: result.skill,
                 name: result.name,
                 surname: result.surname,
-                email: result.email,
                 experience: result.experience,
                 img: result.img,
                 reviews: result.reviews
