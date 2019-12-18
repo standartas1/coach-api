@@ -21,7 +21,7 @@ mongoose.Promise = global.Promise;
 
 const coachRoutes  = require('./api/routes/coaches');
 const reviewRoutes = require('./api/routes/reviews');
-const userRoutes   = require('./api/routes/user');
+const userRoutes   = require('./api/routes/users');
 
 //Middleware
 app.use(morgan('dev'));
@@ -46,7 +46,7 @@ app.use((req, res, next) => {
 //Routes, which should handle requests
 app.use('/coaches',  coachRoutes);      //everything, that starts with /coaches. will be forwarded to coaches.js file
 app.use('/reviews',  reviewRoutes);     //everything, that starts with /reviews. will be forwarded to reviews.js file
-app.use("/user",     userRoutes);
+app.use("/users",     userRoutes);
 
 
 //404 error handling
