@@ -13,7 +13,7 @@ const coachSchema = mongoose.Schema({
 coachSchema.virtual('reviews', {
     ref: 'Review',
     localField: '_id',
-    foreignField: 'users'
+    foreignField: 'coach'
 });
 
 module.exports = mongoose.model('Coach', coachSchema);
