@@ -7,6 +7,13 @@ const coachSchema = mongoose.Schema({
     surname: {type: String, require: true},
     experience: {type: String, require: true},
     img: {type: String, require: true}
+},
+{ toJSON: { virtuals: true}});
+
+coachSchema.virtual('reviews', {
+    ref: 'Review',
+    localField: '_id',
+    foreignField: 'user'
 });
 
 module.exports = mongoose.model('Coach', coachSchema);
