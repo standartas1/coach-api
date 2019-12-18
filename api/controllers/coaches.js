@@ -43,7 +43,7 @@ exports.postCoach = async (req, res) => {
             name: req.body.name,
             surname: req.body.surname,
             experience: req.body.experience,
-            img: req.body.example
+            img: req.body.img
         });
 
         const result = await coach.save();
